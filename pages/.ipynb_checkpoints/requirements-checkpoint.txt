@@ -1,0 +1,7 @@
+aggrid
+plotly
+lottie
+pandas
+folium
+extras
+streamlit==1.54.0
