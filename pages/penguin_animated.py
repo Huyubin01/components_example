@@ -14,7 +14,7 @@ def load_lottieurl(url:str):
     return r.json()
 
 # 【关键修改】：这里换成了直接指向纯 .json 数据文件的网址
-lottie_url = "https://assets9.lottiefiles.com/private_files/lf30_1TcivY.json"
+lottie_url = "https://lottie.host/4671ff09-3abd-4e50-b031-92e8f2d8d677/Qs2kgYsK8b.json"
 lottie_penguin = load_lottieurl(lottie_url)
 
 # 渲染动画
