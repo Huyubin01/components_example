@@ -1,6 +1,7 @@
 streamlit-aggrid
 plotly
 streamlit-lottie
+pandas
 ydata-profiling
 streamlit-ydata-profiling
 streamlit-folium
