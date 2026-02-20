@@ -7,4 +7,6 @@ streamlit-ydata-profiling
 streamlit-folium
 streamlit-extras
 setuptools<82.0.0
+folium
+streamlit_folium
 streamlit==1.54.0
