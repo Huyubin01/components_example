@@ -42,12 +42,12 @@ fig = px.scatter(
     x='bill_length_mm', 
     y='bill_depth_mm', 
     color='species',
-    title="企鹅散点图 (点击或框选图上的点)",
+    title="企颠散点图 (点击或框选图上的点)",
     hover_data=['island', 'sex'], 
     custom_data=['row_id'] 
 )
 
-# 渲染图表并捕获事件 (官方原生写法，完美替代 plotly_events)
+# 渲染图表并捕获事件 (官方原生写法)
 event = st.plotly_chart(
     fig, 
     on_select="rerun", 
@@ -61,7 +61,8 @@ st.subheader("🐧 选中的企鹅详细信息：")
 if event and event.get("selection", {}).get("points"):
     selected_ids = [point["customdata"][0] for point in event["selection"]["points"]]
     selected_data = df_clean.loc[selected_ids].drop(columns=['row_id'])
-    st.dataframe(selected_data, use_container_width=True)
+    # 【修复】：使用最新的宽度自适应参数
+    st.dataframe(selected_data, width='stretch')
 else:
     st.info("👆 请在上方散点图中点击或框选任意点，这里将显示它的所有原始数据。")
 
@@ -70,10 +71,9 @@ st.divider()
 # 5. 整合 Pandas Profiling 数据分析报告
 st.subheader('📊 Pandas Profiling of Penguin Dataset')
 
-# 【重点】：使用 Streamlit 缓存，防止每次点击图表都重新生成几百兆的报告！
+# 使用 Streamlit 缓存，防止每次点击图表都重新生成报告
 @st.cache_resource
 def generate_profile(dataframe):
-    # 这里用的是清洗过的数据 df_clean，生成图表更稳定
     return ProfileReport(dataframe, explorative=True)
 
 # 加载报告并展示
