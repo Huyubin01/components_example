@@ -1,47 +1,49 @@
 import pandas as pd
 import plotly.express as px
 import streamlit as st
-from streamlit_plotly_events import plotly_events
 
-st.title('企鹅数据可视化诊断')
+st.title('Streamlit 官方 Plotly 交互：精准显示点数据')
 
-# 1. 检查数据读取
+# 1. 读取并清洗数据
 df = pd.read_csv('penguins.csv')
+df['bill_length_mm'] = pd.to_numeric(df['bill_length_mm'], errors='coerce')
+df['bill_depth_mm'] = pd.to_numeric(df['bill_depth_mm'], errors='coerce')
+# 重置索引，确保索引是干净连续的数字
+df_clean = df.dropna(subset=['bill_length_mm', 'bill_depth_mm']).reset_index(drop=True)
 
-# 打印列名（非常重要，检查是否有隐藏空格）
-st.write("实际检测到的列名:", [f"'{c}'" for c in df.columns.tolist()])
+# 【关键修改 1】：显式创建一个唯一标识列，用于精准匹配
+df_clean['row_id'] = df_clean.index
 
-# 2. 强制转换数据类型并清洗
-# 有些 CSV 文件首行可能有乱码，或者列名带空格
-# 我们手动指定列名，并处理掉可能的空值
-try:
-    # 如果你的列名带空格，这里会自动报错，提示你修改
-    df['bill_length_mm'] = pd.to_numeric(df['bill_length_mm'], errors='coerce')
-    df['bill_depth_mm'] = pd.to_numeric(df['bill_depth_mm'], errors='coerce')
+# 2. 创建图表
+fig = px.scatter(
+    df_clean, 
+    x='bill_length_mm', 
+    y='bill_depth_mm', 
+    color='species',
+    title="企鹅散点图 (点击或框选图上的点)",
+    hover_data=['island', 'sex'], # 可选：让鼠标悬浮时额外显示岛屿和性别
+    custom_data=['row_id'] # 【关键修改 2】：把真实的行号隐藏进图表中
+)
+
+# 3. 渲染图表并捕获事件
+event = st.plotly_chart(
+    fig, 
+    on_select="rerun", 
+    selection_mode=('box', 'lasso', 'points') 
+)
+
+st.divider()
+st.subheader("🐧 选中的企鹅详细信息：")
+
+# 4. 解析选中的点并提取所有信息
+if event and event.get("selection", {}).get("points"):
+    # 【关键修改 3】：从 customdata 中提取我们塞进去的真实 ID
+    selected_ids = [point["customdata"][0] for point in event["selection"]["points"]]
     
-    # 过滤掉数值不全的行
-    df_clean = df.dropna(subset=['bill_length_mm', 'bill_depth_mm'])
+    # 根据 ID 提取完整数据行（并隐藏掉辅助用的 row_id 列使其更美观）
+    selected_data = df_clean.loc[selected_ids].drop(columns=['row_id'])
     
-    st.write(f"原始行数: {len(df)}，清洗后有效行数: {len(df_clean)}")
-
-    if len(df_clean) > 0:
-        fig = px.scatter(
-            df_clean, 
-            x='bill_length_mm', 
-            y='bill_depth_mm', 
-            color='species',
-            title="散点图成功加载"
-        )
-        # 先用标准 chart 看看有没有点
-        st.plotly_chart(fig)
-        
-        # 再用事件捕捉
-        st.subheader("点击图中的点试试：")
-        selected_points = plotly_events(fig)
-        st.write("选中的数据:", selected_points)
-    else:
-        st.error("错误：清洗后没有发现有效的数值数据！请检查 CSV 文件内容。")
-        st.write("数据前几行预览：", df.head())
-
-except KeyError as e:
-    st.error(f"找不到列名：{e}。请对照上面的『实际检测到的列名』修改代码。")
+    # 完美展示该点的所有信息
+    st.dataframe(selected_data, use_container_width=True)
+else:
+    st.info("👆 请在上方散点图中点击或框选任意点，这里将显示它的所有原始数据。")
