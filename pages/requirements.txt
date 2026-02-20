@@ -1,7 +1,7 @@
-aggrid
-plotly
-lottie
-pandas
-folium
-extras
+streamlit-aggrid
+streamlit-plotly-events
+streamlit-lottie
+streamlit-pandas-profiling
+streamlit-folium
+streamlit-extras
 streamlit==1.54.0
