@@ -11,7 +11,7 @@ def load_lottieurl(url:str):
     if r.status_code != 200:
         return None
     return r.json()
-lottie_penguin = load_lottieurl("C:\Users\86158\streamlit_apps\penguin_app\cutepenguin.png")
+lottie_penguin = load_lottieurl("https://app.lottiefiles.com/animation/ee2eb0a6-0cc5-4a91-8248-27c7a040f8ac")
 st_lottie(lottie_penguin, height=200)
 
 # 1. 读取并清洗数据
