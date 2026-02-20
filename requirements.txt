@@ -1,8 +1,8 @@
 streamlit-aggrid
 plotly
 streamlit-lottie
-streamlit-pandas-profiling
-pandas-profiling
+ydata-profiling
+streamlit-ydata-profiling
 streamlit-folium
 streamlit-extras
 streamlit==1.54.0

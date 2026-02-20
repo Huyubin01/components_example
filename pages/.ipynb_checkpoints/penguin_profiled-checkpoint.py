@@ -3,10 +3,8 @@ import plotly.express as px
 import streamlit as st
 import requests
 from streamlit_lottie import st_lottie
-
-# 导入 Pandas Profiling 库
-from pandas_profiling import ProfileReport
-from streamlit_pandas_profiling import st_profile_report
+from ydata_profiling import ProfileReport
+from streamlit_ydata_profiling import st_profile_report
 
 st.title('Streamlit 官方 Plotly 交互与数据报告')
 
